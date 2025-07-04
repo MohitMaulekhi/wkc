@@ -7,9 +7,11 @@ import InventoryHeader from "../components/inventory/InventoryHeader";
 import ProductForm from "../components/inventory/ProductForm";
 import ProductGrid from "../components/inventory/ProductGrid";
 import InventoryEmptyState from "../components/inventory/InventoryEmptyState";
+import { useSearchParams } from "react-router-dom";
 
 const Inventory = () => {
   const { currentUser } = useAuth();
+  const [searchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -22,11 +24,23 @@ const Inventory = () => {
     category: "",
     sku: "",
   });
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     fetchProducts();
     // eslint-disable-next-line
   }, [currentUser]);
+
+  // Handle edit from URL parameter
+  useEffect(() => {
+    const editProductId = searchParams.get('edit');
+    if (editProductId && products.length > 0) {
+      const productToEdit = products.find(p => p.id === editProductId);
+      if (productToEdit) {
+        handleEdit(productToEdit);
+      }
+    }
+  }, [searchParams, products]);
 
   const fetchProducts = async () => {
     if (!currentUser) return;
@@ -135,6 +149,17 @@ const Inventory = () => {
     setEditingProduct(null);
   };
 
+  // Filter products based on searchValue
+  const filteredProducts = products.filter(product => {
+    const q = searchValue.toLowerCase();
+    return (
+      product.name?.toLowerCase().includes(q) ||
+      product.description?.toLowerCase().includes(q) ||
+      product.category?.toLowerCase().includes(q) ||
+      product.sku?.toLowerCase().includes(q)
+    );
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -151,8 +176,10 @@ const Inventory = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <InventoryHeader
           currentUser={currentUser}
-          products={products}
+          products={filteredProducts}
           onAddProduct={() => setShowAddForm(true)}
+          searchValue={searchValue}
+          onSearch={setSearchValue}
         />
         {showAddForm && (
           <ProductForm
@@ -163,11 +190,11 @@ const Inventory = () => {
             editingProduct={editingProduct}
           />
         )}
-        {products.length === 0 ? (
+        {filteredProducts.length === 0 ? (
           <InventoryEmptyState onAddProduct={() => setShowAddForm(true)} />
         ) : (
           <ProductGrid
-            products={products}
+            products={filteredProducts}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

@@ -20,27 +20,33 @@ const Register = () => {
   const { signup, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
 
+  // Update companyName automatically for Walmart
+  const handleUserTypeChange = (type) => {
+    setUserType(type);
+    setFormData((prev) => ({
+      ...prev,
+      companyName: type === "walmart" ? "Walmart" : "",
+    }));
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
       return;
     }
-
     if (formData.password.length < 6) {
       toast.error("Password must be at least 6 characters");
       return;
     }
-
     setLoading(true);
     try {
       const userData = {
@@ -52,14 +58,8 @@ const Register = () => {
         phone: formData.phone,
         address: formData.address,
         createdAt: new Date().toISOString(),
+        companyName: userType === "walmart" ? "Walmart" : formData.companyName,
       };
-
-      if (userType === "seller") {
-        userData.companyName = formData.companyName;
-      } else {
-        userData.companyName = "Walmart";
-      }
-
       await signup(userData);
       toast.success("Registration successful!");
       navigate("/inventory");
@@ -87,7 +87,7 @@ const Register = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Join WKC Platform</h1>
           <p className="text-gray-600">
@@ -95,49 +95,40 @@ const Register = () => {
           </p>
         </div>
       </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-2xl">
         <div className="bg-white py-8 px-6 shadow-xl rounded-2xl border border-gray-100">
-          {/* User Type Selection */}
+          {/* User Type Toggle */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Register as:
             </label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="flex justify-center gap-4">
               <button
                 type="button"
-                onClick={() => setUserType("seller")}
-                className={`p-3 rounded-lg border-2 transition-all ${
+                onClick={() => handleUserTypeChange("seller")}
+                className={`px-6 py-2 rounded-full border-2 transition-all font-semibold text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   userType === "seller"
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    ? "border-blue-600 bg-blue-50 text-blue-700 shadow"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                 }`}
+                aria-pressed={userType === "seller"}
               >
-                <div className="text-center">
-                  <div className="text-lg mb-1">🏪</div>
-                  <div className="font-medium">Seller</div>
-                  <div className="text-xs text-gray-500">Manage your products</div>
-                </div>
+                Seller
               </button>
-              
               <button
                 type="button"
-                onClick={() => setUserType("walmart")}
-                className={`p-3 rounded-lg border-2 transition-all ${
+                onClick={() => handleUserTypeChange("walmart")}
+                className={`px-6 py-2 rounded-full border-2 transition-all font-semibold text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   userType === "walmart"
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    ? "border-blue-600 bg-blue-50 text-blue-700 shadow"
                     : "border-gray-200 bg-white text-gray-700 hover:border-gray-300"
                 }`}
+                aria-pressed={userType === "walmart"}
               >
-                <div className="text-center">
-                  <div className="text-lg mb-1">🛒</div>
-                  <div className="font-medium">Walmart</div>
-                  <div className="text-xs text-gray-500">Access inventory system</div>
-                </div>
+                Walmart
               </button>
             </div>
           </div>
-
           {/* Google Signup Button */}
           <div className="mb-6">
             <button
@@ -151,10 +142,9 @@ const Register = () => {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
               </svg>
-              {googleLoading ? "Creating account..." : `Continue with Google (${userType === 'seller' ? 'Seller' : 'Walmart'})`}
+              {googleLoading ? "Creating account..." : "Continue with Google"}
             </button>
           </div>
-
           <div className="relative mb-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-300" />
@@ -163,9 +153,8 @@ const Register = () => {
               <span className="px-2 bg-white text-gray-500">Or register with email</span>
             </div>
           </div>
-
           <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
                   First Name
@@ -181,7 +170,6 @@ const Register = () => {
                   placeholder="Enter first name"
                 />
               </div>
-
               <div>
                 <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
                   Last Name
@@ -197,109 +185,102 @@ const Register = () => {
                   placeholder="Enter last name"
                 />
               </div>
-            </div>
-
-            {userType === "seller" && (
+              {userType === "seller" && (
+                <div className="md:col-span-2">
+                  <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
+                    Company Name
+                  </label>
+                  <input
+                    id="companyName"
+                    name="companyName"
+                    type="text"
+                    required
+                    value={formData.companyName}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                    placeholder="Enter company name"
+                  />
+                </div>
+              )}
               <div>
-                <label htmlFor="companyName" className="block text-sm font-medium text-gray-700 mb-1">
-                  Company Name
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  Email address
                 </label>
                 <input
-                  id="companyName"
-                  name="companyName"
-                  type="text"
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
                   required
-                  value={formData.companyName}
+                  value={formData.email}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                  placeholder="Enter company name"
+                  placeholder="Enter your email"
                 />
               </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                value={formData.email}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Enter your email"
-              />
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number
+                </label>
+                <input
+                  id="phone"
+                  name="phone"
+                  type="tel"
+                  required
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Enter phone number"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+                  Address
+                </label>
+                <textarea
+                  id="address"
+                  name="address"
+                  rows={3}
+                  required
+                  value={formData.address}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Enter your address"
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Password
+                </label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Create a password"
+                />
+              </div>
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  autoComplete="new-password"
+                  required
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                  placeholder="Confirm your password"
+                />
+              </div>
             </div>
-
-            <div>
-              <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                Phone Number
-              </label>
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                required
-                value={formData.phone}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Enter phone number"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                Address
-              </label>
-              <textarea
-                id="address"
-                name="address"
-                rows={3}
-                required
-                value={formData.address}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Enter your address"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.password}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Create a password"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                placeholder="Confirm your password"
-              />
-            </div>
-
             <button
               type="submit"
               disabled={loading}
@@ -315,7 +296,6 @@ const Register = () => {
               )}
             </button>
           </form>
-
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
               Already have an account?{" "}

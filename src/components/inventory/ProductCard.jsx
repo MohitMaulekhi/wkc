@@ -1,4 +1,8 @@
+import { Edit, Trash2, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
+
 const ProductCard = ({ product, onEdit, onDelete }) => (
+  <Link to={`/product/${product.id}`}>
   <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
     <div className="p-6">
       <div className="flex justify-between items-start mb-3">
@@ -28,22 +32,25 @@ const ProductCard = ({ product, onEdit, onDelete }) => (
           </div>
         </div>
       </div>
-      <div className="flex space-x-3">
+      <div className="flex space-x-2">
         <button
           onClick={() => onEdit(product)}
-          className="flex-1 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-medium"
+          className="flex-1 bg-gray-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors font-medium flex items-center justify-center"
         >
+          <Edit className="w-4 h-4 mr-1" />
           Edit
         </button>
         <button
           onClick={() => onDelete(product.id)}
-          className="flex-1 bg-red-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors font-medium"
+          className="flex-1 bg-red-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors font-medium flex items-center justify-center"
         >
+          <Trash2 className="w-4 h-4 mr-1" />
           Delete
         </button>
       </div>
+      </div>
     </div>
-  </div>
+  </Link>
 );
 
 export default ProductCard; 
