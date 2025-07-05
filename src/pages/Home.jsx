@@ -48,6 +48,7 @@ const Home = () => {
                                     You are logged in as a <span className="font-semibold text-blue-600">{currentUser?.userType}</span> from <span className="font-semibold">{currentUser?.companyName}</span>
                                 </p>
                                 
+                                <div className="space-y-4">
                                 <Link
                                     to="/inventory"
                                     className="inline-flex items-center space-x-2 bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors shadow-lg"
@@ -57,6 +58,26 @@ const Home = () => {
                                     </svg>
                                     <span>Go to Inventory</span>
                                 </Link>
+                                    
+                                    {/* Category Quick Links */}
+                                    <div className="mt-6">
+                                        <h3 className="text-lg font-semibold text-gray-900 mb-3">Browse Categories</h3>
+                                        <div className="grid grid-cols-2 gap-2">
+                                            {[
+                                                "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",
+                                                "Books", "Toys & Games", "Health & Beauty", "Automotive"
+                                            ].map((category) => (
+                                                <Link
+                                                    key={category}
+                                                    to={`/category/${encodeURIComponent(category)}`}
+                                                    className="text-sm bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors text-center"
+                                                >
+                                                    {category}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     ) : (

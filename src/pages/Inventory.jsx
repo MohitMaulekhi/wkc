@@ -8,6 +8,7 @@ import ProductForm from "../components/inventory/ProductForm";
 import ProductGrid from "../components/inventory/ProductGrid";
 import InventoryEmptyState from "../components/inventory/InventoryEmptyState";
 import { useSearchParams } from "react-router-dom";
+import { Star, Filter } from "lucide-react";
 
 const Inventory = () => {
   const { currentUser } = useAuth();

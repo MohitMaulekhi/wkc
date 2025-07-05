@@ -1,115 +1,195 @@
-import { Mail, Phone, MapPin, BadgeCheck, Package, ShoppingCart, Star, DollarSign, Clock, TrendingUp, Users, CreditCard, Truck, ArrowRight, User } from "lucide-react";
+import { Mail, Phone, MapPin, BadgeCheck, Package, ShoppingCart, Star, DollarSign, Clock, TrendingUp, Users, CreditCard, Truck, ArrowRight, User, Edit3, Save, Plus, X } from "lucide-react";
 import { useAuth } from "../context/UseAuth";
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 
 // ProfileCard component
-const ProfileCard = ({ currentUser, profileData }) => (
+const ProfileCard = ({ currentUser, profileData, editing, editData, setEditData, onEdit, onSave, onCancel, onAddCert, onRemoveCert }) => (
   <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
     <div className="text-center mb-6">
       <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
         <span className="text-2xl font-bold text-white">
-          {currentUser.firstName?.charAt(0)}{currentUser.lastName?.charAt(0)}
+          {editing ? (editData.firstName?.charAt(0) || "U") : (currentUser.firstName?.charAt(0) || "U")}
         </span>
       </div>
-      <h2 className="text-xl font-semibold text-gray-900">
-        {currentUser.firstName} {currentUser.lastName}
-      </h2>
+      {editing ? (
+        <>
+          <input
+            className="text-xl font-semibold text-gray-900 text-center mb-1 border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-2"
+            value={editData.firstName}
+            onChange={e => setEditData(d => ({ ...d, firstName: e.target.value }))}
+            placeholder="First Name"
+          />
+          <input
+            className="text-xl font-semibold text-gray-900 text-center mb-1 border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-2 mt-1"
+            value={editData.lastName}
+            onChange={e => setEditData(d => ({ ...d, lastName: e.target.value }))}
+            placeholder="Last Name"
+          />
+        </>
+      ) : (
+        <h2 className="text-xl font-semibold text-gray-900">
+          {currentUser.firstName} {currentUser.lastName}
+        </h2>
+      )}
       <p className="text-gray-600">{currentUser.companyName || "Independent Seller"}</p>
       <p className="text-sm text-gray-500 mt-1">Member since {profileData.memberSince}</p>
+      <div className="mt-2 flex justify-center gap-2">
+        {!editing && (
+          <button onClick={onEdit} className="flex items-center gap-1 px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors">
+            <Edit3 className="w-4 h-4" /> Edit Profile
+          </button>
+        )}
+        {editing && (
+          <>
+            <button onClick={onSave} className="flex items-center gap-1 px-3 py-1 text-xs bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors">
+              <Save className="w-4 h-4" /> Save
+            </button>
+            <button onClick={onCancel} className="flex items-center gap-1 px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors">
+              <X className="w-4 h-4" /> Cancel
+            </button>
+          </>
+        )}
+      </div>
     </div>
     <div className="space-y-3 mb-6">
       <div className="flex items-center text-sm text-gray-600">
         <Mail className="w-4 h-4 mr-2" />
-        {currentUser.email}
+        {editing ? (
+          <input
+            className="border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-1"
+            value={editData.email}
+            onChange={e => setEditData(d => ({ ...d, email: e.target.value }))}
+            placeholder="Email"
+          />
+        ) : (
+          currentUser.email
+        )}
       </div>
       <div className="flex items-center text-sm text-gray-600">
         <Phone className="w-4 h-4 mr-2" />
-        {currentUser.phone || "+1 (555) 123-4567"}
+        {editing ? (
+          <input
+            className="border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-1"
+            value={editData.phone}
+            onChange={e => setEditData(d => ({ ...d, phone: e.target.value }))}
+            placeholder="Phone"
+          />
+        ) : (
+          currentUser.phone || "+1 (555) 123-4567"
+        )}
       </div>
       <div className="flex items-start text-sm text-gray-600">
         <MapPin className="w-4 h-4 mr-2 mt-0.5" />
-        <span className="text-xs">{currentUser.address || "123 Business St, City, State 12345"}</span>
+        {editing ? (
+          <input
+            className="border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-1 w-full"
+            value={editData.address}
+            onChange={e => setEditData(d => ({ ...d, address: e.target.value }))}
+            placeholder="Address"
+          />
+        ) : (
+          <span className="text-xs">{currentUser.address || "123 Business St, City, State 12345"}</span>
+        )}
       </div>
     </div>
     <div className="mb-6">
       <h3 className="text-sm font-medium text-gray-900 mb-3">Certifications</h3>
       <div className="space-y-2">
-        {profileData.certifications.map((cert, index) => (
-          <div key={index} className="flex items-center text-sm">
-            <BadgeCheck className="w-4 h-4 text-green-500 mr-2" />
-            {cert}
-          </div>
-        ))}
+        {editing ? (
+          <>
+            {editData.certifications.map((cert, idx) => (
+              <div key={idx} className="flex items-center text-sm gap-2">
+                <BadgeCheck className="w-4 h-4 text-green-500" />
+                <input
+                  className="border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-1 flex-1"
+                  value={cert}
+                  onChange={e => setEditData(d => ({ ...d, certifications: d.certifications.map((c, i) => i === idx ? e.target.value : c) }))}
+                />
+                <button onClick={() => onRemoveCert(idx)} className="text-gray-400 hover:text-red-500"><X className="w-4 h-4" /></button>
+              </div>
+            ))}
+            <button onClick={onAddCert} className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 mt-2">
+              <Plus className="w-4 h-4" /> Add Certification
+            </button>
+          </>
+        ) : (
+          profileData.certifications.map((cert, index) => (
+            <div key={index} className="flex items-center text-sm">
+              <BadgeCheck className="w-4 h-4 text-green-500 mr-2" />
+              {cert}
+            </div>
+          ))
+        )}
       </div>
     </div>
     <div>
       <h3 className="text-sm font-medium text-gray-900 mb-2">Business Hours</h3>
-      <p className="text-sm text-gray-600">{profileData.businessHours}</p>
+      {editing ? (
+        <input
+          className="border-b border-gray-200 focus:outline-none focus:border-blue-400 bg-gray-50 px-1 w-full"
+          value={editData.businessHours}
+          onChange={e => setEditData(d => ({ ...d, businessHours: e.target.value }))}
+          placeholder="Business Hours"
+        />
+      ) : (
+        <p className="text-sm text-gray-600">{profileData.businessHours}</p>
+      )}
     </div>
   </div>
 );
 
-// StatsCards component
+// StatsCards component (improved alignment)
 const StatsCards = ({ profileData }) => (
-  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center">
-        <div className="p-2 bg-blue-100 rounded-lg">
-          <Package className="w-6 h-6 text-blue-600" />
-        </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">Total Products</p>
-          <p className="text-2xl font-bold text-gray-900">{profileData.totalProducts}</p>
-        </div>
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col items-center">
+      <div className="p-2 bg-blue-100 rounded-lg mb-2">
+        <Package className="w-6 h-6 text-blue-600" />
       </div>
+      <p className="text-sm font-medium text-gray-600">Total Products</p>
+      <p className="text-2xl font-bold text-gray-900">{profileData.totalProducts}</p>
     </div>
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center">
-        <div className="p-2 bg-green-100 rounded-lg">
-          <ShoppingCart className="w-6 h-6 text-green-600" />
-        </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">Total Sales</p>
-          <p className="text-2xl font-bold text-gray-900">{profileData.totalSales.toLocaleString()}</p>
-        </div>
+    <div className="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col items-center">
+      <div className="p-2 bg-green-100 rounded-lg mb-2">
+        <ShoppingCart className="w-6 h-6 text-green-600" />
       </div>
+      <p className="text-sm font-medium text-gray-600">Total Sales</p>
+      <p className="text-2xl font-bold text-gray-900">{profileData.totalSales.toLocaleString()}</p>
     </div>
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center">
-        <div className="p-2 bg-yellow-100 rounded-lg">
-          <Star className="w-6 h-6 text-yellow-600" />
-        </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">Rating</p>
-          <p className="text-2xl font-bold text-gray-900">{profileData.averageRating}</p>
-        </div>
+    <div className="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col items-center">
+      <div className="p-2 bg-yellow-100 rounded-lg mb-2">
+        <Star className="w-6 h-6 text-yellow-600" />
       </div>
+      <p className="text-sm font-medium text-gray-600">Rating</p>
+      <p className="text-2xl font-bold text-gray-900">{profileData.averageRating}</p>
     </div>
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center">
-        <div className="p-2 bg-purple-100 rounded-lg">
-          <DollarSign className="w-6 h-6 text-purple-600" />
-        </div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">Revenue</p>
-          <p className="text-2xl font-bold text-gray-900">${profileData.totalRevenue.toLocaleString()}</p>
-        </div>
+    <div className="bg-white rounded-xl shadow border border-gray-100 p-4 flex flex-col items-center">
+      <div className="p-2 bg-purple-100 rounded-lg mb-2">
+        <DollarSign className="w-6 h-6 text-purple-600" />
       </div>
+      <p className="text-sm font-medium text-gray-600">Revenue</p>
+      <p className="text-2xl font-bold text-gray-900">${profileData.totalRevenue.toLocaleString()}</p>
     </div>
   </div>
 );
 
-// SalesChart component (placeholder for now)
+// SalesChart using Recharts
 const SalesChart = ({ salesChart }) => (
-  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center"><TrendingUp className="w-5 h-5 mr-2" />Sales (last 6 months)</h3>
-    <div className="flex items-end space-x-4 h-32">
-      {salesChart.map((data, idx) => (
-        <div key={data.month} className="flex flex-col items-center justify-end h-full">
-          <div className="w-6 bg-blue-500 rounded-t-lg" style={{ height: `${data.sales / 4}px` }}></div>
-          <span className="text-xs text-gray-500 mt-1">{data.month}</span>
-        </div>
-      ))}
+  <div className="bg-white rounded-xl shadow border border-gray-100 p-6">
+    <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+      <TrendingUp className="w-5 h-5 mr-2" />Sales (last 6 months)
+    </h3>
+    <div className="h-56 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={salesChart} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+          <YAxis tick={{ fontSize: 12 }} />
+          <Tooltip />
+          <Bar dataKey="sales" fill="#2563eb" radius={[6, 6, 0, 0]} />
+        </BarChart>
+      </ResponsiveContainer>
     </div>
   </div>
 );
@@ -152,7 +232,7 @@ const Profile = () => {
   const { currentUser, userLoggedIn, loading } = useAuth();
 
   // Hardcoded data for seller profile
-  const profileData = {
+  const [profileData, setProfileData] = useState({
     totalProducts: 47,
     totalSales: 2847,
     totalRevenue: 125430,
@@ -169,7 +249,45 @@ const Profile = () => {
     businessHours: "Mon-Fri: 9AM-6PM, Sat: 10AM-4PM",
     shippingMethods: ["Standard", "Express", "Overnight"],
     paymentMethods: ["Credit Card", "PayPal", "Bank Transfer"]
+  });
+
+  const [editing, setEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    firstName: currentUser.firstName || "",
+    lastName: currentUser.lastName || "",
+    email: currentUser.email || "",
+    phone: currentUser.phone || "",
+    address: currentUser.address || "",
+    certifications: profileData.certifications || [],
+    businessHours: profileData.businessHours || ""
+  });
+
+  const handleEdit = () => setEditing(true);
+  const handleCancel = () => {
+    setEditing(false);
+    setEditData({
+      firstName: currentUser.firstName || "",
+      lastName: currentUser.lastName || "",
+      email: currentUser.email || "",
+      phone: currentUser.phone || "",
+      address: currentUser.address || "",
+      certifications: profileData.certifications || [],
+      businessHours: profileData.businessHours || ""
+    });
   };
+  const handleSave = () => {
+    // In a real app, update backend here
+    setEditing(false);
+    // Update currentUser fields if needed (not shown here)
+    setProfileData(d => ({
+      ...d,
+      certifications: editData.certifications,
+      businessHours: editData.businessHours
+    }));
+    // Optionally show a toast
+  };
+  const handleAddCert = () => setEditData(d => ({ ...d, certifications: [...d.certifications, ""] }));
+  const handleRemoveCert = idx => setEditData(d => ({ ...d, certifications: d.certifications.filter((_, i) => i !== idx) }));
 
   const recentReviews = [
     {
@@ -232,26 +350,26 @@ const Profile = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Seller Profile</h1>
-          <p className="text-gray-600 mt-2">Manage your business profile and view performance metrics</p>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row gap-8">
+        <div className="w-full lg:w-1/3 flex flex-col items-center">
+          <ProfileCard
+            currentUser={currentUser}
+            profileData={profileData}
+            editing={editing}
+            editData={editData}
+            setEditData={setEditData}
+            onEdit={handleEdit}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            onAddCert={handleAddCert}
+            onRemoveCert={handleRemoveCert}
+          />
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Profile Card */}
-          <div className="lg:col-span-1">
-            <ProfileCard currentUser={currentUser} profileData={profileData} />
-          </div>
-
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            <StatsCards profileData={profileData} />
-            <SalesChart salesChart={salesChart} />
-            <RecentReviews recentReviews={recentReviews} />
-          </div>
+        <div className="w-full lg:w-2/3 flex flex-col gap-6">
+          <StatsCards profileData={profileData} />
+          <SalesChart salesChart={salesChart} />
+          <RecentReviews recentReviews={recentReviews} />
         </div>
       </div>
     </div>

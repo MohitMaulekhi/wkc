@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/UseAuth';
 import toast from 'react-hot-toast';
@@ -16,6 +16,23 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target)) {
+        setIsCategoryDropdownOpen(false);
+      }
+    }
+    if (isCategoryDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isCategoryDropdownOpen]);
 
   const handleLogout = async () => {
     try {
@@ -35,6 +52,10 @@ const Header = () => {
 
   const toggleProfileDropdown = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
+  };
+
+  const toggleCategoryDropdown = () => {
+    setIsCategoryDropdownOpen(!isCategoryDropdownOpen);
   };
 
   return (
@@ -64,6 +85,38 @@ const Header = () => {
                   </svg>
                   <span>Inventory</span>
                 </Link>
+
+                {/* Categories Dropdown */}
+                <div className="relative" ref={categoryDropdownRef}>
+                  <button
+                    onClick={() => setIsCategoryDropdownOpen((v) => !v)}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-blue-600 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:bg-gray-50"
+                    aria-haspopup="true"
+                    aria-expanded={isCategoryDropdownOpen}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    <span>Categories</span>
+                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                  {isCategoryDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      {["Electronics", "Clothing", "Home & Garden", "Sports & Outdoors", "Books", "Toys & Games", "Health & Beauty", "Automotive", "Tools & Hardware", "Food & Beverages", "Pet Supplies", "Office Supplies"].map((category) => (
+                        <Link
+                          key={category}
+                          to={`/category/${encodeURIComponent(category)}`}
+                          onClick={() => setIsCategoryDropdown(false)}
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          {category}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 
                 {/* Profile Dropdown */}
                 <div className="relative">
@@ -90,7 +143,7 @@ const Header = () => {
                     <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
                       <Link
                         to="/profile"
-                        onClick={() => setIsProfileDropdownOpen(false)}
+                        onClick={() => setIsProfileDropdown(false)}
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <svg className="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,6 +229,28 @@ const Header = () => {
                     </svg>
                     <span>Inventory</span>
                   </Link>
+
+                  {/* Mobile Categories Section */}
+                  <div className="border-t border-gray-100 pt-4">
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Browse Categories
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 px-4">
+                      {[
+                        "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",
+                        "Books", "Toys & Games", "Health & Beauty", "Automotive"
+                      ].map((category) => (
+                        <Link
+                          key={category}
+                          to={`/category/${encodeURIComponent(category)}`}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-sm bg-gray-100 text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-200 transition-colors text-center"
+                        >
+                          {category}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
                   
                   <Link
                     to="/profile"
@@ -226,6 +301,14 @@ const Header = () => {
         <div 
           className="fixed inset-0 bg-black bg-opacity-25 z-40 md:hidden"
           onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      {/* Overlay for category dropdown */}
+      {isCategoryDropdownOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-25 z-40"
+          onClick={() => setIsCategoryDropdown(false)}
         />
       )}
     </header>

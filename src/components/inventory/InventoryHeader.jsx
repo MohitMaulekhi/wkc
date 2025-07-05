@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { Search, Star } from "lucide-react";
 
 const InventoryHeader = ({ currentUser, products, onAddProduct, searchValue, onSearch }) => {
   return (

@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Inventory from "./pages/Inventory";
 import ProductDetail from "./pages/ProductDetail";
+import Category from "./pages/Category";
 import NotFound from "./pages/NotFound";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,6 +12,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast";
 import Profile from "./pages/Profile";
+import Chatbot from "./components/Chatbot";
 
 const App = () => {
   return (
@@ -41,6 +43,10 @@ const App = () => {
                 } 
               />
               <Route 
+                path="/category/:categoryName" 
+                element={<Category />} 
+              />
+              <Route 
                 path="/profile" 
                 element={
                   <ProtectedRoute>
@@ -52,6 +58,7 @@ const App = () => {
             </Routes>
           </main>
           <Footer />
+          <Chatbot />
         </BrowserRouter>
       </AuthProvider>
     </div>
