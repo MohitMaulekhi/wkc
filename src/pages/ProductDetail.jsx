@@ -18,7 +18,8 @@ import {
   AlertTriangle,
   CheckCircle,
   Clock,
-  TrendingUp
+  TrendingUp,
+  Image
 } from "lucide-react";
 
 const ProductDetail = () => {
@@ -26,6 +27,7 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   const [product, setProduct] = useState(null);
+  const [productOwner, setProductOwner] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,6 +48,19 @@ const ProductDetail = () => {
           ...productDoc.data()
         };
         setProduct(productData);
+        
+        // Fetch product owner information
+        if (productData.userId) {
+          try {
+            const userDoc = await getDoc(doc(db, "users", productData.userId));
+            if (userDoc.exists()) {
+              setProductOwner(userDoc.data());
+            }
+          } catch (userError) {
+            console.error("Error fetching product owner:", userError);
+            // Continue without owner info if there's an error
+          }
+        }
       } else {
         setError("Product not found");
       }
@@ -122,21 +137,67 @@ const ProductDetail = () => {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
               <p className="text-gray-600">Product Details</p>
             </div>
-            <div className="flex space-x-3">
-              <button
-                onClick={handleEdit}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+            {currentUser && product.userId === currentUser.uid && (
+              <div className="flex space-x-3">
+                <button
+                  onClick={handleEdit}
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Product Image */}
+        <div className="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+          <div className="relative h-96 bg-gray-100">
+            {product.imageUrl ? (
+              <img 
+                src={product.imageUrl} 
+                alt={product.name}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+            ) : null}
+            <div 
+              className={`w-full h-full flex items-center justify-center ${product.imageUrl ? 'hidden' : 'flex'}`}
+              style={{ display: product.imageUrl ? 'none' : 'flex' }}
+            >
+              <div className="text-center">
+                <Image className="w-24 h-24 text-gray-400 mx-auto mb-4" />
+                <p className="text-lg text-gray-500">No Product Image Available</p>
+                <p className="text-sm text-gray-400 mt-2">Product image will be displayed here</p>
+              </div>
+            </div>
+            {/* Category Badge */}
+            <div className="absolute top-4 left-4">
+              <Link 
+                to={`/category/${encodeURIComponent(product.category)}`}
+                className="inline-flex items-center px-3 py-1 bg-white bg-opacity-90 text-blue-800 text-sm font-medium rounded-full hover:bg-opacity-100 transition-colors backdrop-blur-sm"
               >
-                <Edit className="w-4 h-4 mr-2" />
-                Edit
-              </button>
-              <button
-                onClick={handleDelete}
-                className="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Delete
-              </button>
+                <Tag className="w-4 h-4 mr-1" />
+                {product.category}
+              </Link>
+            </div>
+            {/* SKU Badge */}
+            <div className="absolute top-4 right-4">
+              <span className="inline-flex items-center px-3 py-1 bg-black bg-opacity-50 text-white text-sm font-medium rounded-full backdrop-blur-sm">
+                <Hash className="w-4 h-4 mr-1" />
+                #{product.sku}
+              </span>
             </div>
           </div>
         </div>
@@ -251,19 +312,19 @@ const ProductDetail = () => {
                 <div className="flex items-center">
                   <User className="w-4 h-4 text-gray-500 mr-2" />
                   <span className="text-sm text-gray-600">
-                    {currentUser?.firstName} {currentUser?.lastName}
+                    {productOwner ? `${productOwner.firstName} ${productOwner.lastName}` : product?.userType === "walmart" ? "Walmart" : "Independent Seller"}
                   </span>
                 </div>
                 <div className="flex items-center">
                   <Building className="w-4 h-4 text-gray-500 mr-2" />
                   <span className="text-sm text-gray-600">
-                    {currentUser?.companyName || 'Independent Seller'}
+                    {productOwner?.companyName || product?.companyName || 'Independent Seller'}
                   </span>
                 </div>
                 <div className="flex items-center">
                   <Tag className="w-4 h-4 text-gray-500 mr-2" />
                   <span className="text-sm text-gray-600 capitalize">
-                    {currentUser?.userType || 'Seller'}
+                    {productOwner?.userType || product?.userType || 'Seller'}
                   </span>
                 </div>
               </div>

@@ -95,6 +95,18 @@ const ProductForm = ({
               placeholder="0"
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL (Optional)</label>
+            <input
+              type="url"
+              name="imageUrl"
+              value={formData.imageUrl || ''}
+              onChange={onChange}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              placeholder="https://example.com/image.jpg"
+            />
+            <p className="text-xs text-gray-500 mt-1">Leave empty to use category default image</p>
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>

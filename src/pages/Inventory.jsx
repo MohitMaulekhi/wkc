@@ -24,6 +24,7 @@ const Inventory = () => {
     quantity: "",
     category: "",
     sku: "",
+    imageUrl: "",
   });
   const [searchValue, setSearchValue] = useState("");
 
@@ -101,6 +102,7 @@ const Inventory = () => {
         quantity: "",
         category: "",
         sku: "",
+        imageUrl: "",
       });
       setShowAddForm(false);
       setEditingProduct(null);
@@ -120,6 +122,7 @@ const Inventory = () => {
       quantity: product.quantity.toString(),
       category: product.category,
       sku: product.sku,
+      imageUrl: product.imageUrl || "",
     });
     setShowAddForm(true);
   };
@@ -145,6 +148,7 @@ const Inventory = () => {
       quantity: "",
       category: "",
       sku: "",
+      imageUrl: "",
     });
     setShowAddForm(false);
     setEditingProduct(null);
