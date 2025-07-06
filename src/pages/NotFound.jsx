@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import ImageUploader from '../utils/ImageUploader';
 
 const NotFound = () => {
   return (
@@ -15,7 +16,7 @@ const NotFound = () => {
             className="inline-block bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Go Back Home
-          </Link>
+          </Link> 
         </div>
       </div>
     </div>
