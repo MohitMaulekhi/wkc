@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import toast from "react-hot-toast";
+import { navigateHook } from "../hooks/NavigateHook";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -10,7 +11,7 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, } = useAuth();
   const navigate = useNavigate();
 
   const handleInputChange = (e) => {
@@ -28,7 +29,7 @@ const Login = () => {
     try {
       await login(formData.email, formData.password);
       toast.success("Login successful!");
-      navigate("/inventory");
+      navigateHook(navigate, "inventory", );
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message || "Login failed");
@@ -42,7 +43,7 @@ const Login = () => {
     try {
       await loginWithGoogle(userType);
       toast.success("Google login successful!");
-      navigate("/inventory");
+      navigateHook(navigate, "inventory", userType);
     } catch (error) {
       console.error("Google login error:", error);
       toast.error(error.message || "Google login failed");

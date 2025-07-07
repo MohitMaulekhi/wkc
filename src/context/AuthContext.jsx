@@ -1,79 +1,55 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
 import { AuthContext } from "./UseAuth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db, googleProvider } from "../services/firebase";
-
-
+import toast from "react-hot-toast";
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       await initializeUser(user);
     });
-
-    return () => unsubscribe();
+    
+    return () => unsubscribe(); // Cleanup subscription
   }, []);
 
   const initializeUser = async (user) => {
     setLoading(true);
     if (user) {
       try {
-        // Fetch user details from Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          setCurrentUser({
+          const userObj = {
             uid: user.uid,
             email: user.email,
             ...userData,
-          });
-        } else {
-          // User exists in Auth but not in Firestore - create basic profile
-          console.warn("User exists in Auth but not in Firestore, creating basic profile");
-          const basicUserData = {
-            email: user.email,
-            firstName: user.displayName?.split(' ')[0] || 'User',
-            lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-            userType: 'seller', // Default to seller
-            companyName: 'Individual Seller',
-            phone: user.phoneNumber || '',
-            address: '',
-            photoURL: user.photoURL || '',
-            createdAt: new Date().toISOString(),
           };
-
-          await setDoc(doc(db, "users", user.uid), basicUserData);
+          setCurrentUser(userObj);
+          setUserLoggedIn(true);
           
-          setCurrentUser({
-            uid: user.uid,
-            email: user.email,
-            ...basicUserData,
-          });
+        
+        } else {
+          toast.error("User profile not found in Firestore, Try again later.");
+          setCurrentUser(null);
+          setUserLoggedIn(false);
         }
-        setUserLoggedIn(true);
       } catch (error) {
-        console.error("Error initializing user:", error);
-        // Set basic user data even if Firestore fails
-        setCurrentUser({
-          uid: user.uid,
-          email: user.email,
-          firstName: user.displayName?.split(' ')[0] || 'User',
-          lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-          userType: 'seller',
-          companyName: 'Individual Seller',
-        });
-        setUserLoggedIn(true);
+        console.error("Error fetching user data:", error);
+        toast.error("Failed to fetch user data. Please try again later.");
+        setCurrentUser(null);
+        setUserLoggedIn(false);
       }
     } else {
       setCurrentUser(null);
       setUserLoggedIn(false);
     }
-
     setLoading(false);
   };
 
@@ -92,13 +68,15 @@ export const AuthProvider = ({ children }) => {
 
       await setDoc(doc(db, "users", user.uid), userProfileData);
 
-      setCurrentUser({
+      const userObj = {
         uid: user.uid,
         email: user.email,
         ...userProfileData,
-      });
+      };
 
+      setCurrentUser(userObj);
       setUserLoggedIn(true);
+      
     } catch (error) {
       console.error("Signup error:", error);
       throw error;
@@ -117,34 +95,18 @@ export const AuthProvider = ({ children }) => {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setCurrentUser({
+        const userObj = {
           uid: user.uid,
           email: user.email,
           ...userData,
-        });
-      } else {
-        console.warn("User document not found in Firestore, creating basic profile");
-        // Create basic profile if document doesn't exist
-        const basicUserData = {
-          email: user.email,
-          firstName: 'User',
-          lastName: '',
-          userType: 'seller',
-          companyName: 'Individual Seller',
-          phone: '',
-          address: '',
-          createdAt: new Date().toISOString(),
         };
-
-        await setDoc(doc(db, "users", user.uid), basicUserData);
+        setCurrentUser(userObj);
+        setUserLoggedIn(true);
         
-        setCurrentUser({
-          uid: user.uid,
-          email: user.email,
-          ...basicUserData,
-        });
+      } else {
+        toast.error("User document not found in Firestore, Try again later.");
+        throw new Error("User document not found");
       }
-      setUserLoggedIn(true);
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -153,7 +115,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const loginWithGoogle = async (userType) => {
+const loginWithGoogle = async (userType) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
@@ -162,14 +124,15 @@ export const AuthProvider = ({ children }) => {
       // Check if user already exists in Firestore
       const userDoc = await getDoc(doc(db, "users", user.uid));
       
+      let userObj;
       if (userDoc.exists()) {
         // User exists, just update the data
         const userData = userDoc.data();
-        setCurrentUser({
+        userObj = {
           uid: user.uid,
           email: user.email,
           ...userData,
-        });
+        };
       } else {
         // New user, create profile
         const userData = {
@@ -186,14 +149,16 @@ export const AuthProvider = ({ children }) => {
 
         await setDoc(doc(db, "users", user.uid), userData);
         
-        setCurrentUser({
+        userObj = {
           uid: user.uid,
           email: user.email,
           ...userData,
-        });
+        };
       }
 
+      setCurrentUser(userObj);
       setUserLoggedIn(true);
+      
     } catch (error) {
       console.error("Google login error:", error);
       throw error;
@@ -201,10 +166,11 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
   const logout = async () => {
     setLoading(true);
     try {
-      await signOut();
+      await signOut(auth);
       setCurrentUser(null);
       setUserLoggedIn(false);
     } catch (error) {
@@ -216,6 +182,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
   const value = {
     currentUser,
     userLoggedIn,

@@ -2,7 +2,7 @@ import { Eye, Image } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => (
-  <Link to={`/product/${product.id}`}>
+  <Link to={`/seller/product/${product.id}`}>
     <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
       {/* Product Image */}
       <div className="relative h-48 bg-gray-100 overflow-hidden">

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import toast from "react-hot-toast";
+import { navigateHook } from "../hooks/NavigateHook";
 
 const Register = () => {
   const [userType, setUserType] = useState("seller");
@@ -62,7 +63,7 @@ const Register = () => {
       };
       await signup(userData);
       toast.success("Registration successful!");
-      navigate("/inventory");
+      navigateHook(navigate, "inventory", userType);
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(error.message || "Registration failed");
@@ -76,7 +77,7 @@ const Register = () => {
     try {
       await loginWithGoogle(userType);
       toast.success("Google registration successful!");
-      navigate("/inventory");
+      navigateHook(navigate, "inventory", userType);
     } catch (error) {
       console.error("Google registration error:", error);
       toast.error(error.message || "Google registration failed");

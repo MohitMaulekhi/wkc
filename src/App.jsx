@@ -26,8 +26,9 @@ const App = () => {
               <Route index element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
+              
               <Route 
-                path="/inventory" 
+                path="/seller/inventory" 
                 element={
                   <ProtectedRoute>
                     <Inventory />
@@ -35,7 +36,7 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/product/:id" 
+                path="/seller/product/:id" 
                 element={
                   <ProtectedRoute>
                     <ProductDetail />
@@ -43,19 +44,22 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/category/:categoryName" 
+                path="/seller/category/:categoryName" 
                 element={<Category />} 
               />
               <Route 
-                path="/profile" 
+                path="/seller/profile" 
                 element={
                   <ProtectedRoute>
                     <Profile />
                   </ProtectedRoute>
                 } 
               />
+              
               <Route path="*" element={<NotFound />} />
-            </Routes>
+
+              </Routes>
+            
           </main>
           <Footer />
           <Chatbot />
