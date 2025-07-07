@@ -74,11 +74,26 @@ const Inventory = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Additional validation for price and quantity
+    const price = parseFloat(formData.price);
+    const quantity = parseInt(formData.quantity);
+    
+    if (price < 0) {
+      toast.error("Price cannot be negative");
+      return;
+    }
+    
+    if (quantity < 0) {
+      toast.error("Quantity cannot be negative");
+      return;
+    }
+    
     try {
       const productData = {
         ...formData,
-        price: parseFloat(formData.price),
-        quantity: parseInt(formData.quantity),
+        price: price,
+        quantity: quantity,
         userId: currentUser.uid,
         userType: currentUser.userType,
         companyName: currentUser.companyName,
@@ -186,15 +201,17 @@ const Inventory = () => {
           searchValue={searchValue}
           onSearch={setSearchValue}
         />
-        {showAddForm && (
-          <ProductForm
-            formData={formData}
-            onChange={handleInputChange}
-            onSubmit={handleSubmit}
-            onCancel={resetForm}
-            editingProduct={editingProduct}
-          />
-        )}
+        
+        {/* Product Form Modal */}
+        <ProductForm
+          formData={formData}
+          onChange={handleInputChange}
+          onSubmit={handleSubmit}
+          onCancel={resetForm}
+          editingProduct={editingProduct}
+          isOpen={showAddForm}
+        />
+        
         {filteredProducts.length === 0 ? (
           <InventoryEmptyState onAddProduct={() => setShowAddForm(true)} />
         ) : (

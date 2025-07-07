@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { geminiService } from '../services/gemini';
+import { Upload, Sparkles, Image as ImageIcon, Loader2, AlertCircle } from 'lucide-react';
 
 const ImageUploader = ({ 
   onImageUpload, 
@@ -7,11 +9,16 @@ const ImageUploader = ({
   maxFileSize = 10485760, // 10MB in bytes
   showPreview = true,
   className = "",
-  style = {}
+  style = {},
+  productDetails = {} // For AI image generation context
 }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [cloudinaryLoaded, setCloudinaryLoaded] = useState(false);
+  const [activeTab, setActiveTab] = useState('upload'); // 'upload' or 'generate'
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiError, setAiError] = useState('');
 
   // Check if Cloudinary is loaded
   useEffect(() => {
@@ -71,14 +78,15 @@ const ImageUploader = ({
               width: result.info.width,
               height: result.info.height,
               bytes: result.info.bytes,
-              createdAt: result.info.created_at
+              createdAt: result.info.created_at,
+              source: 'cloudinary'
             };
 
             console.log('Image uploaded successfully:', imageData);
             
             setUploadedImage(imageData);
             
-            // Send image data to parent widget
+            // Send image data to parent component
             if (onImageUpload) {
               onImageUpload(imageData);
             }
@@ -92,11 +100,57 @@ const ImageUploader = ({
     }
   };
 
+  const generateAIImage = async () => {
+    if (!aiPrompt.trim()) {
+      alert('Please enter a description for the image you want to generate.');
+      return;
+    }
+
+    setIsGenerating(true);
+    setAiError('');
+    
+    try {
+      const generatedImage = await geminiService.generateImage(aiPrompt, productDetails);
+      
+      const imageData = {
+        url: generatedImage.url,
+        originalFilename: `AI_Generated_${Date.now()}.png`,
+        format: 'png',
+        width: 1024, // Default AI generated image size
+        height: 1024,
+        bytes: 0, // Unknown for AI generated
+        createdAt: generatedImage.generatedAt,
+        prompt: generatedImage.prompt,
+        source: generatedImage.source || 'gemini_ai'
+      };
+
+      console.log('AI Image generated successfully:', imageData);
+      
+      setUploadedImage(imageData);
+      
+      // Send image data to parent component
+      if (onImageUpload) {
+        onImageUpload(imageData);
+      }
+    } catch (error) {
+      console.error('AI Image generation error:', error);
+      setAiError(error.message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleImageUpload = (imageData) => {
+    setUploadedImage(imageData);
+    if (onImageUpload) {
+      onImageUpload(imageData);
+    }
+  };
+
   return (
     <div 
       className={`image-uploader ${className}`} 
       style={{
-        // Remove flex centering that might affect layout
         position: 'relative',
         display: 'inline-block',
         width: 'auto',
@@ -104,82 +158,160 @@ const ImageUploader = ({
         ...style
       }}
     >
-      {/* Only show button if no image is uploaded */}
-      {!uploadedImage && (
-        <button 
-          onClick={openCloudinaryWidget} 
-          disabled={isUploading || !cloudinaryLoaded}
-          style={{
-            padding: '12px 24px',
-            backgroundColor: isUploading || !cloudinaryLoaded ? '#ccc' : '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: isUploading || !cloudinaryLoaded ? 'not-allowed' : 'pointer',
-            fontSize: '14px',
-            fontWeight: '500',
-            display: 'inline-block',
-            ...style.button
-          }}
+      {/* Tab Navigation */}
+      <div className="flex mb-4 border-b border-gray-200">
+        <button
+          onClick={() => setActiveTab('upload')}
+          className={`flex items-center px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'upload'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
         >
-          {isUploading ? 'Uploading...' : !cloudinaryLoaded ? 'Loading...' : buttonText}
+          <Upload className="w-4 h-4 mr-2" />
+          Upload Image
         </button>
+        <button
+          onClick={() => setActiveTab('generate')}
+          className={`flex items-center px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            activeTab === 'generate'
+              ? 'border-blue-500 text-blue-600'
+              : 'border-transparent text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          Generate with AI
+        </button>
+      </div>
+
+      {/* Upload Tab */}
+      {activeTab === 'upload' && (
+        <div>
+          {!uploadedImage && (
+            <button 
+              onClick={openCloudinaryWidget} 
+              disabled={isUploading || !cloudinaryLoaded}
+              className={`flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-colors ${
+                isUploading || !cloudinaryLoaded
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500'
+              }`}
+            >
+              {isUploading ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Uploading...
+                </>
+              ) : !cloudinaryLoaded ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <Upload className="w-4 h-4 mr-2" />
+                  {buttonText}
+                </>
+              )}
+            </button>
+          )}
+
+          {!cloudinaryLoaded && !uploadedImage && (
+            <p className="text-xs text-gray-500 mt-2">
+              Loading upload widget...
+            </p>
+          )}
+        </div>
       )}
 
-      {/* Show loading message if Cloudinary not loaded */}
-      {!cloudinaryLoaded && !uploadedImage && (
-        <p style={{ 
-          color: '#666', 
-          fontSize: '12px', 
-          margin: '5px 0 0 0',
-          display: 'inline-block'
-        }}>
-          Loading upload widget...
-        </p>
+      {/* Generate Tab */}
+      {activeTab === 'generate' && (
+        <div className="space-y-4">
+          {/* AI Generation Info */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start">
+              <Sparkles className="w-5 h-5 text-blue-600 mt-0.5 mr-3 flex-shrink-0" />
+              <div>
+                <h4 className="text-sm font-medium text-blue-800">AI Image Generation</h4>
+                <p className="text-sm text-blue-700 mt-1">
+                  Generate professional product images using Gemini 2.0 Flash Preview. Images are automatically saved to Cloudinary for optimal performance.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Describe the image you want to generate
+            </label>
+            <textarea
+              value={aiPrompt}
+              onChange={(e) => setAiPrompt(e.target.value)}
+              placeholder="e.g., A modern smartphone with a sleek design on a white background"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              rows={3}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Be specific about the product, style, and background you want
+            </p>
+          </div>
+          
+          <button
+            onClick={generateAIImage}
+            disabled={isGenerating || !aiPrompt.trim()}
+            className={`flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-colors ${
+              isGenerating || !aiPrompt.trim()
+                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                : 'bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500'
+            }`}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating & Uploading...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Generate Image
+              </>
+            )}
+          </button>
+
+          {aiError && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <div className="flex items-start">
+                <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 mr-2 flex-shrink-0" />
+                <div>
+                  <p className="text-sm text-red-700 font-medium">Generation Failed</p>
+                  <p className="text-xs text-red-600 mt-1">{aiError}</p>
+                  <p className="text-xs text-red-600 mt-1">
+                    Try using the upload feature instead, or check your API key configuration.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
-      {/* Image preview - contained within component */}
+      {/* Image preview */}
       {showPreview && uploadedImage && (
-        <div style={{ 
-          marginTop: '15px',
-          width: '100%',
-          maxWidth: '300px'
-        }}>
-          <h4 style={{ 
-            margin: '0 0 10px 0', 
-            color: '#333',
-            fontSize: '14px'
-          }}>
-            Uploaded Image
+        <div className="mt-6">
+          <h4 className="text-sm font-medium text-gray-700 mb-3 flex items-center">
+            <ImageIcon className="w-4 h-4 mr-2" />
+            {uploadedImage.source === 'gemini_ai_cloudinary' ? 'AI Generated Image' : 
+             uploadedImage.source === 'gemini_ai' ? 'Generated Image' : 'Uploaded Image'}
           </h4>
-          <div style={{
-            border: '1px solid #ddd',
-            borderRadius: '8px',
-            padding: '10px',
-            backgroundColor: '#f9f9f9',
-            width: '100%'
-          }}>
+          <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
             <img 
               src={uploadedImage.url} 
               alt={uploadedImage.originalFilename}
-              style={{
-                width: '100%',
-                height: '150px',
-                objectFit: 'cover',
-                borderRadius: '6px',
-                display: 'block'
-              }}
+              className="w-full h-48 object-cover rounded-lg"
             />
-            <div style={{ 
-              fontSize: '11px', 
-              color: '#666', 
-              marginTop: '8px',
-              lineHeight: '1.3'
-            }}>
-              <div><strong>File:</strong> {uploadedImage.originalFilename}</div>
-              <div><strong>Size:</strong> {(uploadedImage.bytes / 1024 / 1024).toFixed(2)} MB</div>
-              <div><strong>Dimensions:</strong> {uploadedImage.width} × {uploadedImage.height}</div>
-            </div>
+            {uploadedImage.source === 'gemini_ai_cloudinary' && (
+              <div className="mt-3 text-sm text-green-600 font-semibold">✓ Saved to Cloudinary</div>
+            )}
           </div>
         </div>
       )}
