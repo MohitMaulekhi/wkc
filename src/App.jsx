@@ -6,6 +6,7 @@ import Inventory from "./pages/Inventory";
 import ProductDetail from "./pages/ProductDetail";
 import Category from "./pages/Category";
 import NotFound from "./pages/NotFound";
+import Admin from "./pages/Admin";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -52,6 +53,15 @@ const App = () => {
                 element={
                   <ProtectedRoute>
                     <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute>
+                    <Admin />
                   </ProtectedRoute>
                 } 
               />
