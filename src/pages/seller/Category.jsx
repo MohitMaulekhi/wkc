@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import toast from "react-hot-toast";
 import { 
   ArrowLeft, 
@@ -15,7 +15,7 @@ import {
   Search,
   Filter
 } from "lucide-react";
-import CategoryProductCard from "../components/category/CategoryProductCard";
+import CategoryProductCard from "../../components/category/CategoryProductCard";
 
 const Category = () => {
   const { categoryName } = useParams();

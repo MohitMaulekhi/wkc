@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { doc, getDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
-import { useAuth } from "../context/UseAuth";
+import { db } from "../../services/firebase";
+import { useAuth } from "../../context/UseAuth";
 import toast from "react-hot-toast";
 import { 
   ArrowLeft, 

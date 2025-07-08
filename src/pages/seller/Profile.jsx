@@ -1,5 +1,5 @@
 import { Mail, Phone, MapPin, BadgeCheck, Package, ShoppingCart, Star, DollarSign, Clock, TrendingUp, Users, CreditCard, Truck, ArrowRight, User, Edit3, Save, Plus, X } from "lucide-react";
-import { useAuth } from "../context/UseAuth";
+import { useAuth } from "../../context/UseAuth";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';

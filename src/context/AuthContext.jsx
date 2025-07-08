@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signOut } from "firebase/auth";
+import { onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { AuthContext } from "./UseAuth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { auth, db, googleProvider } from "../services/firebase";
+import { auth, db } from "../services/firebase";
 import toast from "react-hot-toast";
 
 export const AuthProvider = ({ children }) => {
@@ -100,6 +100,7 @@ export const AuthProvider = ({ children }) => {
           email: user.email,
           ...userData,
         };
+        console.log(userObj);
         setCurrentUser(userObj);
         setUserLoggedIn(true);
         
@@ -109,58 +110,6 @@ export const AuthProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Login error:", error);
-      throw error;
-    } finally {
-      setLoading(false);
-    }
-  };
-
-const loginWithGoogle = async (userType) => {
-    setLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-
-      // Check if user already exists in Firestore
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      
-      let userObj;
-      if (userDoc.exists()) {
-        // User exists, just update the data
-        const userData = userDoc.data();
-        userObj = {
-          uid: user.uid,
-          email: user.email,
-          ...userData,
-        };
-      } else {
-        // New user, create profile
-        const userData = {
-          email: user.email,
-          firstName: user.displayName?.split(' ')[0] || 'User',
-          lastName: user.displayName?.split(' ').slice(1).join(' ') || '',
-          userType: userType,
-          companyName: userType === 'walmart' ? 'Walmart' : 'Individual Seller',
-          phone: user.phoneNumber || '',
-          address: '',
-          photoURL: user.photoURL || '',
-          createdAt: new Date().toISOString(),
-        };
-
-        await setDoc(doc(db, "users", user.uid), userData);
-        
-        userObj = {
-          uid: user.uid,
-          email: user.email,
-          ...userData,
-        };
-      }
-
-      setCurrentUser(userObj);
-      setUserLoggedIn(true);
-      
-    } catch (error) {
-      console.error("Google login error:", error);
       throw error;
     } finally {
       setLoading(false);
@@ -189,7 +138,6 @@ const loginWithGoogle = async (userType) => {
     setCurrentUser,
     signup,
     login,
-    loginWithGoogle,
     logout,
     loading,
   };

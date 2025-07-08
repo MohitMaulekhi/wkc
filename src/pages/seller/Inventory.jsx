@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../context/UseAuth";
+import { useAuth } from "../../context/UseAuth";
 import { collection, query, where, getDocs, addDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import toast from "react-hot-toast";
-import InventoryHeader from "../components/inventory/InventoryHeader";
-import ProductForm from "../components/inventory/ProductForm";
-import ProductGrid from "../components/inventory/ProductGrid";
-import InventoryEmptyState from "../components/inventory/InventoryEmptyState";
+import InventoryHeader from "../../components/inventory/InventoryHeader";
+import ProductForm from "../../components/inventory/ProductForm";
+import ProductGrid from "../../components/inventory/ProductGrid";
+import InventoryEmptyState from "../../components/inventory/InventoryEmptyState";
 import { useSearchParams } from "react-router-dom";
 import { Star, Filter } from "lucide-react";
 

@@ -18,8 +18,6 @@ const getNavigationConfig = (userType) => {
     seller: {
       links: [
         { to: '/seller/inventory', label: 'Inventory', icon: 'inventory' },
-        { to: '/seller/products', label: 'My Products', icon: 'products' },
-        { to: '/seller/orders', label: 'Orders', icon: 'orders' }
       ],
       categories: [
         "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",
@@ -30,15 +28,12 @@ const getNavigationConfig = (userType) => {
     },
     walmart: {
       links: [
-        { to: '/walmart/dashboard', label: 'Dashboard', icon: 'dashboard' },
-        { to: '/walmart/analytics', label: 'Analytics', icon: 'analytics' },
-        { to: '/walmart/suppliers', label: 'Suppliers', icon: 'suppliers' }
+        { to: '/walmart/order', label: 'Order', icon: 'package' },
+        { to: '/walmart/myOrders', label: 'My Orders', icon: 'Package' },
+        { to: '/walmart/cart', label: 'Cart', icon: 'basket' }
+
       ],
-      categories: [
-        "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",
-        "Books", "Toys & Games", "Health & Beauty", "Automotive",
-        "Tools & Hardware", "Food & Beverages", "Pet Supplies", "Office Supplies"
-      ],
+      categories: [],
       profilePath: '/walmart/profile',
       categoryBasePath: '/walmart/category'
     },

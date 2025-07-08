@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, User, Loader2 } from 'lucide-react';
 import { geminiService } from '../services/gemini';
 import toast from 'react-hot-toast';
+import { useAuth } from '../context/UseAuth';
 
 const Chatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ const Chatbot = () => {
       timestamp: new Date()
     }
   ]);
+  const {userLoggedIn} = useAuth();
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -94,7 +96,7 @@ const Chatbot = () => {
   };
 
   return (
-    <>
+   (userLoggedIn?<div>
       {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
@@ -204,7 +206,7 @@ const Chatbot = () => {
           </div>
         </div>
       )}
-    </>
+    </div>:null)
   );
 };
 
