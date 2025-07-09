@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import toast from "react-hot-toast";
@@ -11,8 +11,15 @@ const Login = () => {
   });
   const [loading, setLoading] = useState(false);
     
-  const { login, currentUser } = useAuth();
+  const { login, currentUser, userLoggedIn } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (userLoggedIn && currentUser) {
+      navigateHook(navigate, 'profile', currentUser.userType);
+    }
+  }, [userLoggedIn, currentUser, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -29,6 +36,7 @@ const Login = () => {
     try {
       await login(formData.email, formData.password);
       toast.success("Login successful!");
+      // Redirect to user type specific profile page
       navigateHook(navigate, "profile", currentUser?.userType || "seller");
     } catch (error) {
       console.error("Login error:", error);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/UseAuth";
 import toast from "react-hot-toast";
@@ -17,8 +17,15 @@ const Register = () => {
     address: "",
   });
   const [loading, setLoading] = useState(false);
-  const { signup } = useAuth();
+  const { signup, userLoggedIn, currentUser } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (userLoggedIn && currentUser) {
+      navigateHook(navigate, 'profile', currentUser.userType);
+    }
+  }, [userLoggedIn, currentUser, navigate]);
 
   // Update companyName automatically for Walmart
   const handleUserTypeChange = (type) => {
@@ -62,6 +69,7 @@ const Register = () => {
       };
       await signup(userData);
       toast.success("Registration successful!");
+      // Redirect to user type specific profile page
       navigateHook(navigate, "profile", userType);
     } catch (error) {
       console.error("Registration error:", error);

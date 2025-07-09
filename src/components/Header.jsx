@@ -152,7 +152,7 @@ const Header = () => {
 
   const handleLogoClick = () => {
     if (userLoggedIn) {
-      navigateHook(navigate, 'profile', currentUser?.userType);
+      navigate('/');
     } else {
       navigate('/');
     }
