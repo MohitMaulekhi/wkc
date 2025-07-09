@@ -196,7 +196,7 @@ const ProductDetail = () => {
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center px-3 py-1 bg-black bg-opacity-50 text-white text-sm font-medium rounded-full backdrop-blur-sm">
                 <Hash className="w-4 h-4 mr-1" />
-                #{product.sku}
+                SKU - {product.sku}
               </span>
             </div>
           </div>

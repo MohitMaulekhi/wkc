@@ -3,6 +3,7 @@ import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore
 import { useAuth } from '../../context/UseAuth';
 import toast from 'react-hot-toast';
 import { db } from '../../services/firebase';
+import { RefreshCcw } from 'lucide-react';
 
 const Order = () => {
   const { currentUser } = useAuth();
@@ -171,9 +172,9 @@ const Order = () => {
             <h1 className="text-3xl font-bold text-gray-900">Walmart Products</h1>
             <button
               onClick={handleRefresh}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+              className="px-4 py-2 transition-colors"
             >
-              🔄 Refresh
+              <RefreshCcw className="w-4 h-4" />
             </button>
           </div>
         </div>

@@ -34,7 +34,7 @@ const ProductCard = ({ product }) => {
         {/* SKU Badge */}
         <div className="absolute top-3 right-3">
           <span className="text-xs text-white bg-black bg-opacity-50 px-2 py-1 rounded-full backdrop-blur-sm">
-            #{product.sku}
+            SKU - {product.sku}
           </span>
         </div>
       </div>
