@@ -17,6 +17,7 @@ import Chatbot from "./components/Chatbot";
 import Cart from "./pages/walmart/Cart";
 import Order from "./pages/walmart/Order";
 import MyOrders from "./pages/walmart/MyOrders";
+import WalmartProfile from "./pages/walmart/Profile";
 
 const App = () => {
   return (
@@ -86,7 +87,7 @@ const App = () => {
               <Route 
                 path="/walmart/profile" 
                 element={ <ProtectedRoute>
-                    <Profile />
+                    <WalmartProfile />
                   </ProtectedRoute>} 
               />
               

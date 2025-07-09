@@ -101,7 +101,7 @@ const Home = () => {
             title: "Add New Product",
             description: "Create a new product listing",
             icon: Plus,
-            link: "/inventory",
+            link: `/${currentUser?.userType || 'seller'}/inventory`,
             color: "bg-blue-500 hover:bg-blue-600",
             badge: "Primary"
         },
@@ -109,21 +109,21 @@ const Home = () => {
             title: "View Inventory",
             description: "Manage your product catalog",
             icon: Package,
-            link: "/inventory",
+            link: `/${currentUser?.userType || 'seller'}/inventory`,
             color: "bg-green-500 hover:bg-green-600"
         },
         {
             title: "Browse Categories",
             description: "Explore products by category",
             icon: Tag,
-            link: "/",
+            link: `/${currentUser?.userType || 'seller'}/inventory`,
             color: "bg-purple-500 hover:bg-purple-600"
         },
         {
             title: "Profile Settings",
             description: "Update your account information",
             icon: Settings,
-            link: "/profile",
+            link: `/${currentUser?.userType || 'seller'}/profile`,
             color: "bg-gray-500 hover:bg-gray-600"
         }
     ];
@@ -171,14 +171,14 @@ const Home = () => {
                                 </div>
                                 <div className="flex space-x-3">
                                     <Link
-                                        to="/inventory"
+                                        to={`/${currentUser?.userType || 'seller'}/inventory`}
                                         className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                                     >
                                         <Plus className="w-4 h-4 mr-2" />
                                         Add Product
                                     </Link>
                                     <Link
-                                        to="/profile"
+                                        to={`/${currentUser?.userType || 'seller'}/profile`}
                                         className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                                     >
                                         <User className="w-4 h-4 mr-2" />
@@ -325,7 +325,7 @@ const Home = () => {
                                                         {product.createdAt ? new Date(product.createdAt).toLocaleDateString() : 'N/A'}
                                                     </p>
                                                     <Link
-                                                        to={`/product/${product.id}`}
+                                                        to={`/${currentUser?.userType || 'seller'}/product/${product.id}`}
                                                         className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                                                     >
                                                         View
@@ -339,7 +339,7 @@ const Home = () => {
                                         <Package className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                                         <p className="text-gray-600">No products yet</p>
                                         <Link
-                                            to="/inventory"
+                                            to={`/${currentUser?.userType || 'seller'}/inventory`}
                                             className="inline-flex items-center mt-2 text-blue-600 hover:text-blue-700 font-medium"
                                         >
                                             Add your first product
@@ -357,7 +357,7 @@ const Home = () => {
                                 {categories.map((category) => (
                                     <Link
                                         key={category.name}
-                                        to={`/category/${encodeURIComponent(category.name)}`}
+                                        to={`/${currentUser?.userType || 'seller'}/category/${encodeURIComponent(category.name)}`}
                                         className="group p-4 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-md transition-all duration-200 text-center"
                                     >
                                         <div className="text-3xl mb-2">{category.icon}</div>

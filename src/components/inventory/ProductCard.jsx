@@ -1,8 +1,13 @@
 import { Eye, Image } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "../../context/UseAuth";
 
-const ProductCard = ({ product }) => (
-  <Link to={`/seller/product/${product.id}`}>
+const ProductCard = ({ product }) => {
+  const { currentUser } = useAuth();
+  const userType = currentUser?.userType || 'seller';
+  
+  return (
+    <Link to={`/${userType}/product/${product.id}`}>
     <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
       {/* Product Image */}
       <div className="relative h-48 bg-gray-100 overflow-hidden">
@@ -66,6 +71,7 @@ const ProductCard = ({ product }) => (
       </div>
     </div>
   </Link>
-);
+  );
+};
 
 export default ProductCard; 
