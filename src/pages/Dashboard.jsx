@@ -23,7 +23,15 @@ import {
   User,
   Tag,
   CheckCircle,
-  Activity
+  Activity,
+  Smartphone,
+  Shirt,
+  Home,
+  Trophy,
+  BookOpen,
+  Gamepad2,
+  Sparkles,
+  Car
 } from 'lucide-react';
 
 const Dashboard = () => {
@@ -86,14 +94,14 @@ const Dashboard = () => {
     };
 
     const categories = [
-        { name: "Electronics", icon: "📱", color: "bg-blue-100 text-blue-600" },
-        { name: "Clothing", icon: "👕", color: "bg-purple-100 text-purple-600" },
-        { name: "Home & Garden", icon: "🏠", color: "bg-green-100 text-green-600" },
-        { name: "Sports & Outdoors", icon: "⚽", color: "bg-orange-100 text-orange-600" },
-        { name: "Books", icon: "📚", color: "bg-red-100 text-red-600" },
-        { name: "Toys & Games", icon: "🎮", color: "bg-pink-100 text-pink-600" },
-        { name: "Health & Beauty", icon: "💄", color: "bg-indigo-100 text-indigo-600" },
-        { name: "Automotive", icon: "🚗", color: "bg-gray-100 text-gray-600" }
+        { name: "Electronics", icon: Smartphone, color: "bg-blue-100 text-blue-600" },
+        { name: "Clothing", icon: Shirt, color: "bg-purple-100 text-purple-600" },
+        { name: "Home & Garden", icon: Home, color: "bg-green-100 text-green-600" },
+        { name: "Sports & Outdoors", icon: Trophy, color: "bg-orange-100 text-orange-600" },
+        { name: "Books", icon: BookOpen, color: "bg-red-100 text-red-600" },
+        { name: "Toys & Games", icon: Gamepad2, color: "bg-pink-100 text-pink-600" },
+        { name: "Health & Beauty", icon: Sparkles, color: "bg-indigo-100 text-indigo-600" },
+        { name: "Automotive", icon: Car, color: "bg-gray-100 text-gray-600" }
     ];
 
     const quickActions = [
@@ -402,7 +410,9 @@ const Dashboard = () => {
                                     to={`/${currentUser?.userType || 'seller'}/category/${encodeURIComponent(category.name)}`}
                                     className="group p-6 rounded-xl border border-gray-100 hover:border-gray-200 hover:shadow-lg hover:scale-105 transition-all duration-300 text-center bg-gradient-to-br from-gray-50 to-white"
                                 >
-                                    <div className="text-4xl mb-3 transform group-hover:scale-110 transition-transform duration-300">{category.icon}</div>
+                                    <div className="mb-3 transform group-hover:scale-110 transition-transform duration-300 flex justify-center">
+                                        <category.icon className="w-10 h-10 text-gray-600" />
+                                    </div>
                                     <h3 className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors mb-2">
                                         {category.name}
                                     </h3>

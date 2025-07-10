@@ -14,6 +14,7 @@ import { useAuth } from "../../context/UseAuth";
 import toast from "react-hot-toast";
 import { db } from "../../services/firebase";
 import { Link } from "react-router-dom";
+import { Camera } from "lucide-react";
 
 const Cart = () => {
   const { currentUser } = useAuth();
@@ -354,7 +355,9 @@ const CartItem = ({
         {shouldShowPlaceholder ? (
           <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
             <div className="text-gray-400 text-center">
-              <div className="text-2xl mb-1">📷</div>
+              <div className="flex justify-center mb-1">
+                <Camera className="w-6 h-6" />
+              </div>
               <div className="text-xs">No Image</div>
             </div>
           </div>
