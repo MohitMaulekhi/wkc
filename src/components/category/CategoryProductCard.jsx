@@ -1,6 +1,12 @@
 import { Eye, Building, Image } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useAuth } from "../../context/UseAuth";
 
-const CategoryProductCard = ({ product }) => (
+const CategoryProductCard = ({ product }) => {
+  const { currentUser } = useAuth();
+  const userType = currentUser?.userType || 'seller';
+  
+  return (
   <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
     {/* Product Image */}
     <div className="relative h-48 bg-gray-100 overflow-hidden">
@@ -27,7 +33,7 @@ const CategoryProductCard = ({ product }) => (
       {/* SKU Badge */}
       <div className="absolute top-3 right-3">
         <span className="text-xs text-white bg-black bg-opacity-50 px-2 py-1 rounded-full backdrop-blur-sm">
-          #{product.sku}
+          SKU - {product.sku}
         </span>
       </div>
     </div>
@@ -59,11 +65,12 @@ const CategoryProductCard = ({ product }) => (
           </div>
         )}
       </div>
-      <div className="w-full bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-semibold flex items-center justify-center shadow">
+      <Link to={`/${userType}/product/${product.id}`} className="w-full bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors font-semibold flex items-center justify-center shadow">
         View Details
-      </div>
+      </Link>
     </div>
   </div>
-);
+  );
+};
 
 export default CategoryProductCard; 

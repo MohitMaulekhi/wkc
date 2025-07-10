@@ -4,6 +4,7 @@ import { useAuth } from '../../context/UseAuth';
 import toast from 'react-hot-toast';
 import { db } from '../../services/firebase';
 import { Link } from 'react-router-dom';
+import { Package, Search, Camera } from 'lucide-react';
 
 const MyOrders = () => {
   const { currentUser } = useAuth();
@@ -179,7 +180,9 @@ const MyOrders = () => {
         {/* Orders List */}
         {orders.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">📦</div>
+            <div className="flex justify-center mb-4">
+              <Package className="w-16 h-16 text-gray-400" />
+            </div>
             <h2 className="text-2xl font-semibold text-gray-600 mb-2">No Orders Yet</h2>
             <p className="text-gray-500 mb-6">
               You haven't placed any orders yet. Start shopping to see your orders here.
@@ -193,7 +196,9 @@ const MyOrders = () => {
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <div className="flex justify-center mb-4">
+              <Search className="w-16 h-16 text-gray-400" />
+            </div>
             <h2 className="text-2xl font-semibold text-gray-600 mb-2">No Orders Found</h2>
             <p className="text-gray-500 mb-6">
               No orders found with the selected filter.
@@ -281,7 +286,9 @@ const OrderCard = ({ order, onViewDetails, getStatusBadge, formatDate }) => {
           {shouldShowPlaceholder ? (
             <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
               <div className="text-gray-400 text-center">
-                <div className="text-2xl mb-1">📷</div>
+                <div className="flex justify-center mb-1">
+                  <Camera className="w-6 h-6" />
+                </div>
                 <div className="text-xs">No Image</div>
               </div>
             </div>

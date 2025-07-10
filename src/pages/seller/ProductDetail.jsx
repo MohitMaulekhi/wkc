@@ -79,7 +79,7 @@ const ProductDetail = () => {
     try {
       await deleteDoc(doc(db, "products", id));
       toast.success("Product deleted successfully!");
-      navigate("/inventory");
+      navigate(`/${currentUser?.userType || 'seller'}/inventory`);
     } catch (error) {
       console.error("Error deleting product:", error);
       toast.error("Failed to delete product");
@@ -87,7 +87,7 @@ const ProductDetail = () => {
   };
 
   const handleEdit = () => {
-    navigate(`/inventory?edit=${id}`);
+    navigate(`/${currentUser?.userType || 'seller'}/inventory?edit=${id}`);
   };
 
   if (loading) {
@@ -109,7 +109,7 @@ const ProductDetail = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Product Not Found</h2>
           <p className="text-gray-600 mb-4">{error || "The product you're looking for doesn't exist."}</p>
           <Link 
-            to="/inventory"
+            to={`/${currentUser?.userType || 'seller'}/inventory`}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -126,7 +126,7 @@ const ProductDetail = () => {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            to="/inventory"
+            to={`/${currentUser?.userType || 'seller'}/inventory`}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -185,7 +185,7 @@ const ProductDetail = () => {
             {/* Category Badge */}
             <div className="absolute top-4 left-4">
               <Link 
-                to={`/category/${encodeURIComponent(product.category)}`}
+                to={`/${currentUser?.userType || 'seller'}/category/${encodeURIComponent(product.category)}`}
                 className="inline-flex items-center px-3 py-1 bg-white bg-opacity-90 text-blue-800 text-sm font-medium rounded-full hover:bg-opacity-100 transition-colors backdrop-blur-sm"
               >
                 <Tag className="w-4 h-4 mr-1" />
@@ -196,7 +196,7 @@ const ProductDetail = () => {
             <div className="absolute top-4 right-4">
               <span className="inline-flex items-center px-3 py-1 bg-black bg-opacity-50 text-white text-sm font-medium rounded-full backdrop-blur-sm">
                 <Hash className="w-4 h-4 mr-1" />
-                #{product.sku}
+                SKU - {product.sku}
               </span>
             </div>
           </div>

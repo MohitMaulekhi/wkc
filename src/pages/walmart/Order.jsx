@@ -3,6 +3,7 @@ import { collection, getDocs, addDoc, serverTimestamp } from 'firebase/firestore
 import { useAuth } from '../../context/UseAuth';
 import toast from 'react-hot-toast';
 import { db } from '../../services/firebase';
+import { Package, Search, Camera } from 'lucide-react';
 
 const Order = () => {
   const { currentUser } = useAuth();
@@ -141,10 +142,6 @@ const Order = () => {
     }
   };
 
-  const handleRefresh = () => {
-    fetchProducts();
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -152,7 +149,7 @@ const Order = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading products...</p>
           <button 
-            onClick={handleRefresh}
+            onClick={fetchProducts}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Retry
@@ -165,39 +162,31 @@ const Order = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h1 className="text-3xl font-bold text-gray-900">Walmart Products</h1>
-            <button
-              onClick={handleRefresh}
-              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
-            >
-              🔄 Refresh
-            </button>
-          </div>
-        </div>
+
 
         {/* Filters and Search */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Search Products
-              </label>
+          {/* Enhanced Search Bar */}
+          <div className="mb-6">
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Search className="h-5 w-5 text-gray-400" />
+              </div>
               <input
                 type="text"
-                placeholder="Search by name or description..."
+                placeholder="Search for products by name, description, or category..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg placeholder-gray-500"
               />
             </div>
+          </div>
 
+          {/* Filters Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Category Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Category
               </label>
               <select
@@ -215,7 +204,7 @@ const Order = () => {
 
             {/* Sort */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
                 Sort By
               </label>
               <select
@@ -232,8 +221,8 @@ const Order = () => {
 
             {/* Results Count */}
             <div className="flex items-end">
-              <div className="text-sm text-gray-600">
-                <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> products
+              <div className="text-sm text-gray-600 bg-gray-50 px-4 py-2 rounded-lg w-full">
+                <strong>{filteredProducts.length}</strong> of <strong>{products.length}</strong> products found
               </div>
             </div>
           </div>
@@ -242,19 +231,17 @@ const Order = () => {
         {/* Products Grid */}
         {products.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">📦</div>
+            <div className="flex justify-center mb-4">
+              <Package className="w-16 h-16 text-gray-400" />
+            </div>
             <h2 className="text-2xl font-semibold text-gray-600 mb-2">No Products Available</h2>
-            <p className="text-gray-500 mb-6">There are currently no products in the database.</p>
-            <button 
-              onClick={handleRefresh}
-              className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-            >
-              Refresh Products
-            </button>
+            <p className="text-gray-500 mb-6">There are currently no products in the database. Please check back later.</p>
           </div>
         ) : filteredProducts.length === 0 ? (
           <div className="text-center py-12">
-            <div className="text-gray-400 text-6xl mb-4">🔍</div>
+            <div className="flex justify-center mb-4">
+              <Search className="w-16 h-16 text-gray-400" />
+            </div>
             <h2 className="text-2xl font-semibold text-gray-600 mb-2">No Products Found</h2>
             <p className="text-gray-500 mb-6">No products match your current search criteria.</p>
             <button 
@@ -352,7 +339,9 @@ const ProductCard = ({ product, onAddToCart }) => {
         {shouldShowPlaceholder ? (
           <div className="w-full h-48 bg-gray-100 flex items-center justify-center">
             <div className="text-gray-400 text-center">
-              <div className="text-4xl mb-2">📷</div>
+              <div className="flex justify-center mb-2">
+                <Camera className="w-10 h-10" />
+              </div>
               <div className="text-sm">No Image</div>
             </div>
           </div>

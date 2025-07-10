@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../../services/firebase";
+import { useAuth } from "../../context/UseAuth";
 import toast from "react-hot-toast";
 import { 
   ArrowLeft, 
@@ -19,6 +20,7 @@ import CategoryProductCard from "../../components/category/CategoryProductCard";
 
 const Category = () => {
   const { categoryName } = useParams();
+  const { currentUser } = useAuth();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -114,11 +116,11 @@ const Category = () => {
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Error Loading Products</h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <Link 
-            to="/"
+            to={`/${currentUser?.userType || 'seller'}/inventory`}
             className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
+            Back to Inventory
           </Link>
         </div>
       </div>
@@ -131,11 +133,11 @@ const Category = () => {
         {/* Header */}
         <div className="mb-8">
           <Link 
-            to="/"
+            to={`/${currentUser?.userType || 'seller'}/inventory`}
             className="inline-flex items-center text-blue-600 hover:text-blue-700 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Home
+            Back to Inventory
           </Link>
           <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
             <div>
