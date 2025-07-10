@@ -18,6 +18,7 @@ const getNavigationConfig = (userType) => {
     seller: {
       links: [
         { to: '/seller/inventory', label: 'Inventory', icon: 'inventory' },
+        { to: '/seller/order', label: 'Order', icon: 'package' },
       ],
       categories: [
         "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",

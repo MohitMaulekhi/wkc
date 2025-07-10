@@ -16,6 +16,7 @@ import Chatbot from "./components/Chatbot";
 import Cart from "./pages/walmart/Cart";
 import Order from "./pages/walmart/Order";
 import MyOrders from "./pages/walmart/MyOrders";
+import SellerOrders from "./pages/seller/SellerOrders";
 
 const App = () => {
   return (
@@ -49,6 +50,10 @@ const App = () => {
               <Route 
                 path="/seller/category/:categoryName" 
                 element={<Category />} 
+              />
+              <Route
+              path="/seller/order" 
+                element={<SellerOrders/>} 
               />
               <Route 
                 path="/seller/profile" 
