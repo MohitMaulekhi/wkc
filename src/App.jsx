@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
@@ -38,45 +38,45 @@ const App = () => {
                 path="/seller" 
                 element={
                   <ProtectedRoute>
-                    <Routes>
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="inventory" element={<Inventory />} />
-                      <Route path="product/:id" element={<ProductDetail />} />
-                      <Route path="category/:categoryName" element={<Category />} />
-                      <Route path="profile" element={<Profile />} />
-                    </Routes>
+                    <Outlet />
                   </ProtectedRoute>
                 } 
-              />
+              >
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="inventory" element={<Inventory />} />
+                <Route path="product/:id" element={<ProductDetail />} />
+                <Route path="category/:categoryName" element={<Category />} />
+                <Route path="profile" element={<Profile />} />
+              </Route>
 
               {/* Walmart Routes */}
               <Route 
                 path="/walmart" 
                 element={
                   <ProtectedRoute>
-                    <Routes>
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route path="cart" element={<Cart />} />
-                      <Route path="order" element={<Order />} />
-                      <Route path="myOrders" element={<MyOrders />} />
-                      <Route path="profile" element={<WalmartProfile />} />
-                    </Routes>
+                    <Outlet />
                   </ProtectedRoute>
                 } 
-              />
+              >
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="cart" element={<Cart />} />
+                <Route path="order" element={<Order />} />
+                <Route path="myOrders" element={<MyOrders />} />
+                <Route path="profile" element={<WalmartProfile />} />
+              </Route>
 
               {/* Admin Routes */}
               <Route 
                 path="/admin" 
                 element={
                   <ProtectedRoute>
-                    <Routes>
-                      <Route path="dashboard" element={<Dashboard />} />
-                      <Route index element={<Admin />} />
-                    </Routes>
+                    <Outlet />
                   </ProtectedRoute>
                 } 
-              />
+              >
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route index element={<Admin />} />
+              </Route>
               
               <Route path="*" element={<NotFound />} />
             </Routes>
