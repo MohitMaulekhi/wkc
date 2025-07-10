@@ -30,6 +30,7 @@ const getNavigationConfig = (userType) => {
   const configs = {
     seller: {
       links: [
+        { to: '/seller/dashboard', label: 'Dashboard', icon: 'dashboard' },
         { to: '/seller/inventory', label: 'Inventory', icon: 'inventory' },
       ],
       categories: [
@@ -37,27 +38,31 @@ const getNavigationConfig = (userType) => {
         "Books", "Toys & Games", "Health & Beauty", "Automotive"
       ],
       profilePath: '/seller/profile',
+      dashboardPath: '/seller/dashboard',
       categoryBasePath: '/seller/category'
     },
     walmart: {
       links: [
+        { to: '/walmart/dashboard', label: 'Dashboard', icon: 'dashboard' },
         { to: '/walmart/order', label: 'Order', icon: 'package' },
         { to: '/walmart/myOrders', label: 'My Orders', icon: 'Package' },
         { to: '/walmart/cart', label: 'Cart', icon: 'basket' }
-
       ],
       categories: [],
       profilePath: '/walmart/profile',
+      dashboardPath: '/walmart/dashboard',
       categoryBasePath: '/walmart/category'
     },
     admin: {
       links: [
-        { to: '/admin/dashboard', label: 'Admin Panel', icon: 'admin' },
+        { to: '/admin/dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { to: '/admin', label: 'Admin Panel', icon: 'admin' },
         { to: '/admin/users', label: 'Manage Users', icon: 'users' },
         { to: '/admin/reports', label: 'Reports', icon: 'reports' }
       ],
       categories: [],
       profilePath: '/admin/profile',
+      dashboardPath: '/admin/dashboard',
       categoryBasePath: '/admin/category'
     }
   };
@@ -252,6 +257,14 @@ const Header = () => {
                           <Icon name="profile" className="w-4 h-4 mr-3" />
                           Profile
                         </Link>
+                        <Link
+                          to={navConfig.dashboardPath}
+                          onClick={() => setIsProfileDropdownOpen(false)}
+                          className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <Icon name="dashboard" className="w-4 h-4 mr-3" />
+                          Dashboard
+                        </Link>
                         <button
                           onClick={handleLogout}
                           className="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
@@ -364,6 +377,15 @@ const Header = () => {
                         </div>
                       </div>
                     )}
+                    
+                    <Link
+                      to={navConfig.dashboardPath}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 text-gray-700 hover:text-blue-600 px-4 py-3 rounded-lg text-sm font-medium transition-colors hover:bg-gray-50"
+                    >
+                      <Icon name="dashboard" />
+                      <span>Dashboard</span>
+                    </Link>
                     
                     <Link
                       to={navConfig.profilePath}

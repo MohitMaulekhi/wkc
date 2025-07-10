@@ -30,89 +30,56 @@ const App = () => {
           <main className="flex-1">
             <Routes>
               <Route index element={<Home />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               
+              {/* Seller Routes */}
               <Route 
-                path="/seller/inventory" 
+                path="/seller" 
                 element={
                   <ProtectedRoute>
-                    <Inventory />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/seller/product/:id" 
-                element={
-                  <ProtectedRoute>
-                    <ProductDetail />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/seller/category/:categoryName" 
-                element={<Category />} 
-              />
-              <Route 
-                path="/seller/profile" 
-                element={
-                  <ProtectedRoute>
-                    <Profile />
+                    <Routes>
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="inventory" element={<Inventory />} />
+                      <Route path="product/:id" element={<ProductDetail />} />
+                      <Route path="category/:categoryName" element={<Category />} />
+                      <Route path="profile" element={<Profile />} />
+                    </Routes>
                   </ProtectedRoute>
                 } 
               />
 
-              {/* Routes for walmart*/}
-
+              {/* Walmart Routes */}
               <Route 
-                path="/walmart/cart" 
+                path="/walmart" 
                 element={
-                <ProtectedRoute>
-                <Cart />
-                </ProtectedRoute>
+                  <ProtectedRoute>
+                    <Routes>
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route path="cart" element={<Cart />} />
+                      <Route path="order" element={<Order />} />
+                      <Route path="myOrders" element={<MyOrders />} />
+                      <Route path="profile" element={<WalmartProfile />} />
+                    </Routes>
+                  </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/walmart/order" 
-                
-                element={<ProtectedRoute><Order/> </ProtectedRoute>} 
-              />
-              <Route
-              path="/walmart/myOrders"
-              element={
-                <ProtectedRoute>
-                  <MyOrders/>
-                </ProtectedRoute>
-              }
-              />
-              <Route 
-                path="/walmart/profile" 
-                element={ <ProtectedRoute>
-                    <WalmartProfile />
-                  </ProtectedRoute>} 
-              />
-              
+
+              {/* Admin Routes */}
               <Route 
                 path="/admin" 
                 element={
                   <ProtectedRoute>
-                    <Admin />
+                    <Routes>
+                      <Route path="dashboard" element={<Dashboard />} />
+                      <Route index element={<Admin />} />
+                    </Routes>
                   </ProtectedRoute>
                 } 
               />
               
               <Route path="*" element={<NotFound />} />
-
-              </Routes>
-            
+            </Routes>
           </main>
           <Footer />
           <Chatbot />

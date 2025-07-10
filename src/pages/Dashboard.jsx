@@ -134,10 +134,10 @@ const Dashboard = () => {
             color: "bg-indigo-500 hover:bg-indigo-600"
         },
         {
-            title: "Chat Support",
-            description: "Get help from our AI assistant",
-            icon: Users,
-            link: "/",
+            title: currentUser?.userType === 'walmart' ? "Place Order" : "Chat Support",
+            description: currentUser?.userType === 'walmart' ? "Order products from sellers" : "Get help from our AI assistant",
+            icon: currentUser?.userType === 'walmart' ? ShoppingCart : Users,
+            link: currentUser?.userType === 'walmart' ? `/${currentUser?.userType}/order` : "/",
             color: "bg-pink-500 hover:bg-pink-600"
         }
     ];

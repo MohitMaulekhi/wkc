@@ -17,7 +17,7 @@ const Login = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (userLoggedIn && currentUser) {
-      navigateHook(navigate, 'profile', currentUser.userType);
+      navigateHook(navigate, 'dashboard', currentUser.userType);
     }
   }, [userLoggedIn, currentUser, navigate]);
 
@@ -36,8 +36,8 @@ const Login = () => {
     try {
       await login(formData.email, formData.password);
       toast.success("Login successful!");
-      // Redirect to user type specific profile page
-      navigateHook(navigate, "profile", currentUser?.userType || "seller");
+      // Redirect to user type specific dashboard page
+      navigateHook(navigate, "dashboard", currentUser?.userType || "seller");
     } catch (error) {
       console.error("Login error:", error);
       toast.error(error.message || "Login failed");

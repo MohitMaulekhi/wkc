@@ -23,7 +23,7 @@ const Register = () => {
   // Redirect if already logged in
   useEffect(() => {
     if (userLoggedIn && currentUser) {
-      navigateHook(navigate, 'profile', currentUser.userType);
+      navigateHook(navigate, 'dashboard', currentUser.userType);
     }
   }, [userLoggedIn, currentUser, navigate]);
 
@@ -69,8 +69,8 @@ const Register = () => {
       };
       await signup(userData);
       toast.success("Registration successful!");
-      // Redirect to user type specific profile page
-      navigateHook(navigate, "profile", userType);
+      // Redirect to user type specific dashboard page
+      navigateHook(navigate, "dashboard", userType);
     } catch (error) {
       console.error("Registration error:", error);
       toast.error(error.message || "Registration failed");
