@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Chat conversations
+    match /conversations/{conversationId} {
+      // Users can read conversations they're part of
+      allow read: if request.auth != null && 
+        (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+      
+      // Users can create/update conversations they're part of
+      allow write: if request.auth != null && 
+        (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+      
+      // Messages subcollection
+      match /messages/{messageId} {
+        // Users can read messages in conversations they're part of
+        allow read: if request.auth != null && 
+          (get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerId == request.auth.uid || 
+           get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerId == request.auth.uid);
+        
+        // Users can send messages in conversations they're part of
+        allow create: if request.auth != null && 
+          (get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerId == request.auth.uid || 
+           get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerId == request.auth.uid) &&
+          request.resource.data.senderId == request.auth.uid;
+        
+        // Users can update their own messages (e.g., mark as read)
+        allow update: if request.auth != null && 
+          (get(/databases/$(database)/documents/conversations/$(conversationId)).data.buyerId == request.auth.uid || 
+           get(/databases/$(database)/documents/conversations/$(conversationId)).data.sellerId == request.auth.uid) &&
+          (resource.data.senderId == request.auth.uid || 
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']));
+      }
+    }
+    
+    // Products (if you have product data)
+    match /products/{productId} {
+      allow read: if true; // Anyone can read products
+      allow write: if request.auth != null && request.auth.token.role == 'seller';
+    }
+    
+    // Orders
+    match /orders/{orderId} {
+      allow read: if request.auth != null && 
+        (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+      allow write: if request.auth != null && 
+        (resource.data.buyerId == request.auth.uid || resource.data.sellerId == request.auth.uid);
+    }
+  }
+} 

@@ -13,7 +13,8 @@ import {
   ChevronDown, 
   LogOut,
   Menu,
-  X
+  X,
+  MessageCircle
 } from 'lucide-react';
 
 function getInitials(firstName, lastName) {
@@ -32,6 +33,7 @@ const getNavigationConfig = (userType) => {
         { to: '/seller/dashboard', label: 'Dashboard', icon: 'dashboard' },
         { to: '/seller/inventory', label: 'Inventory', icon: 'inventory' },
         { to: '/seller/order', label: 'Order', icon: 'package' },
+        { to: '/seller/chat', label: 'Chat', icon: 'message' },
       ],
       categories: [
         "Electronics", "Clothing", "Home & Garden", "Sports & Outdoors",
@@ -46,7 +48,8 @@ const getNavigationConfig = (userType) => {
         { to: '/walmart/dashboard', label: 'Dashboard', icon: 'dashboard' },
         { to: '/walmart/order', label: 'Order', icon: 'package' },
         { to: '/walmart/myOrders', label: 'My Orders', icon: 'Package' },
-        { to: '/walmart/cart', label: 'Cart', icon: 'basket' }
+        { to: '/walmart/cart', label: 'Cart', icon: 'basket' },
+        { to: '/walmart/chat', label: 'Chat', icon: 'message' },
       ],
       categories: [],
       profilePath: '/walmart/profile',
@@ -88,7 +91,8 @@ const Icon = ({ name, className = "w-5 h-5" }) => {
     logout: <LogOut className={className} />,
     package: <Package className={className} />,
     Package: <Package className={className} />,
-    basket: <ShoppingCart className={className} />
+    basket: <ShoppingCart className={className} />,
+    message: <MessageCircle className={className} />
   };
 
   return icons[name] || null;
